@@ -1,5 +1,5 @@
-import pkgutil
 from typing import List
+import urllib.request
 
 from dataclass_csv import DataclassReader
 
@@ -8,11 +8,9 @@ from kabu.model import Company
 
 class TSE:
     def __init__(self) -> None:
-        data = pkgutil.get_data(__name__, 'data/stocks.csv')
-        if data:
-            reader = DataclassReader(data.decode('utf-8').splitlines(), Company)
-        else:
-            raise Exception('File not found.')
+        with urllib.request.urlopen('https://raw.githubusercontent.com/otomarukanta/stocks-data-public/main/stocks.csv') as response:
+            data = response.read()
+        reader = DataclassReader(data.decode('utf-8').splitlines(), Company)
 
         self.companies: List[Company] = [row for row in reader]
 
